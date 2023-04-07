@@ -4,13 +4,6 @@ import random
 import math
 import json
 from functools import partial
-import matplotlib.pyplot as plt
-plt.set_cmap('cividis')
-from IPython.display import set_matplotlib_formats
-set_matplotlib_formats('svg', 'pdf') # For export
-from matplotlib.colors import to_rgb
-import matplotlib
-matplotlib.rcParams['lines.linewidth'] = 2.0
 from tqdm.notebook import tqdm
 import torch
 import torch.nn as nn
@@ -269,6 +262,21 @@ class PointNet(nn.Module):
         x = F.relu(self.bn5(self.conv5(x)))
         return x
 
+class softMax(torch.nn.Module):
+    def __init__(self,emb_dims):
+        super(softMax,self).__init__()
+        self.linear_src=torch.nn.Linear(emb_dims,1)
+        self.linear_tar=torch.nn.Linear(emb_dims,1)
+        self.softmax_src=torch.nn.Softmax(dim=1) 
+        self.softmax_tar=torch.nn.Softmax(dim=1)
+    
+    def forward(self,src,tar):
+        out_linear_src=self.linear_src(src)
+        binary_source=self.softmax_src(out_linear_src)
+        out_linear_tar=self.linear_tar(tar)
+        binary_target=self.softmax_tar(out_linear_tar)
+        return binary_source, binary_target
+
 class FeatureExtractor(nn.Module):
     def __init__(self,emb_dims,n_blocks,dropout,ff_dims,n_heads):
         super(FeatureExtractor,self).__init__()
@@ -279,16 +287,22 @@ class FeatureExtractor(nn.Module):
         self.n_heads=n_heads
         self.extractor=PointNet(emb_dims=self.emb_dims)
         self.transf=Transformer(self.emb_dims,self.n_blocks,self.dropout,self.ff_dims,self.n_heads)
+        self.outputLayer=softMax(emb_dims=self.emb_dims)
     
     def forward(self,src,tgt):
         src_embedding=self.extractor(src)
         tgt_embedding=self.extractor(tgt)
         src_embedding_p, tgt_embedding_p = self.transf(src_embedding, tgt_embedding)
-        src_embedding=src_embedding+src_embedding_p
-        tgt_embedding=tgt_embedding+tgt_embedding_p
-        
-        return src_embedding,tgt_embedding
+        src_embedding=(src_embedding+src_embedding_p)# shape is (number points,128,1)
+        tgt_embedding=(tgt_embedding+tgt_embedding_p)
+        src_embedding_new=torch.reshape(src_embedding,(src_embedding.shape[2],src_embedding.shape[0],src_embedding.shape[1]))
+        tgt_embedding_new=torch.reshape(tgt_embedding,(tgt_embedding.shape[2],tgt_embedding.shape[0],tgt_embedding.shape[1]))
+        binary_out_source,binary_out_target=self.outputLayer(src_embedding_new,tgt_embedding_new)
+        #print(f'binary out source is {binary_out_source} and shape is {binary_out_source.shape}')
 
+       
+        return binary_out_source,binary_out_target
+    
 
 
 
