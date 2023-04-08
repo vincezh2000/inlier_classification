@@ -9,6 +9,7 @@ from utils import *
 from transformer import FeatureExtractor
 from trial_network import SiameseNetwork
 import logging
+import gc
 #load dataset
 # what is the input? the input should be the source_transformed and taregt point cloud (shape_source,3),(shape_target,3)
 # what is the ground truth? the ground truth is what comes out from the dataset (shape_point_cloud,2) 
@@ -22,6 +23,8 @@ if __name__=='__main__':
     else:
         dev="cpu"
     device=torch.device(dev)
+    gc.collect()
+    torch.cuda.empty_cache()
     learning_rate = 0.0001 # try the new learning rate + double check the softmax results + input visualization Aditya + check dcp code (ex: batch norm layer) 
     epochs = 20
     CFG_DIR = r"/scratch/fsa4859/OverlapPredator/configs/test/kitti.yaml"
@@ -63,9 +66,13 @@ if __name__=='__main__':
                 #logging.warning("Loading data into model")
                 src_out_net = model(source,target)
                 src_out_net=torch.squeeze(src_out_net)
+                #tgt_out_net=torch.squeeze(tgt_out_net)
                 print(f'printing unique elements in src_out net {src_out_net.unique()}')
                 print(f'printing max element in src_out net {torch.max(src_out_net)}')
                 print(f'printing min element in src_out net {torch.min(src_out_net)}')
+                #print(f'printing unique elements in src_out net {tgt_out_net.unique()}')
+                #print(f'printing max element in src_out net {torch.max(tgt_out_net)}')
+                #print(f'printing min element in src_out net {torch.min(tgt_out_net)}')
                 #for i in range(src_out_net.shape[0]):
                     #if src_out_net[i]>=0.5:
                         #src_out_net[i]=1
@@ -89,13 +96,17 @@ if __name__=='__main__':
                 #loss_src=BCE_Loss(src_out_net,gt_src)
                 print(f'ground truth source is {gt_src}')
                 print(f'result from model is {src_out_net}')
+                print(f'shape of model output is {src_out_net.shape}')
                 print(f'shape of source ground truth is {gt_src.shape}')
+                print(f'shape of target ground truth is {gt_tgt.shape}')
                 loss_src=BCE_Loss(src_out_net,gt_src)
+                #loss_tgt=BCE_Loss(tgt_out_net[:-1],gt_tgt)
+                loss_src_tgt=loss_src
                 # optimizer
                 optimizer.zero_grad()
-                loss_src.backward()
+                loss_src_tgt.backward()
                 optimizer.step()
-                loss_total=loss_total+loss_src
+                loss_total=loss_total+loss_src_tgt
             losses.append(loss_total/200)
             print(f"epoch {e}: loss:{loss_total/200}")
         
