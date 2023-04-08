@@ -25,7 +25,7 @@ if __name__=='__main__':
     device=torch.device(dev)
     gc.collect()
     torch.cuda.empty_cache()
-    learning_rate = 0.0001 # try the new learning rate + double check the softmax results + input visualization Aditya + check dcp code (ex: batch norm layer) 
+    learning_rate = 0.00001 # try the new learning rate + double check the softmax results + input visualization Aditya + check dcp code (ex: batch norm layer) 
     epochs = 20
     CFG_DIR = r"/scratch/fsa4859/OverlapPredator/configs/test/kitti.yaml"
     config = edict(load_config(CFG_DIR))
@@ -64,28 +64,14 @@ if __name__=='__main__':
                 source=source.to(device)
                 target=target.to(device)
                 #logging.warning("Loading data into model")
-                src_out_net = model(source,target)
+                src_out_net,tgt_out_net = model(source,target)
                 src_out_net=torch.squeeze(src_out_net)
-                #tgt_out_net=torch.squeeze(tgt_out_net)
-                print(f'printing unique elements in src_out net {src_out_net.unique()}')
-                print(f'printing max element in src_out net {torch.max(src_out_net)}')
-                print(f'printing min element in src_out net {torch.min(src_out_net)}')
-                #print(f'printing unique elements in src_out net {tgt_out_net.unique()}')
-                #print(f'printing max element in src_out net {torch.max(tgt_out_net)}')
-                #print(f'printing min element in src_out net {torch.min(tgt_out_net)}')
-                #for i in range(src_out_net.shape[0]):
-                    #if src_out_net[i]>=0.5:
-                        #src_out_net[i]=1
-                #else:
-                    #src_out_net[i]=0
-            
-                # read the indices of overlapping points
+                tgt_out_net=torch.squeeze(tgt_out_net)
                 path_to_overlapping_indices=r"/scratch/fsa4859/OverlapPredator/new_overlap_pairs/" +f"pair {index}" + ".npy"
                 overlapping_indices=np.load(path_to_overlapping_indices,allow_pickle=True)
                 overlapping_indices.astype(dtype=int,copy=False)
                 overlapping_indices_torch=torch.from_numpy(overlapping_indices)
                 overlapping_indices_torch=overlapping_indices_torch.to(device,dtype=torch.int64)
-                print(f'printing overlapping indices torch {overlapping_indices_torch}')
                 # initialize ground truth for both source and target
                 gt_src=torch.zeros(source.shape[0],requires_grad=True).to(device)
                 gt_tgt=torch.zeros(target.shape[0],requires_grad=True).to(device)
@@ -100,8 +86,10 @@ if __name__=='__main__':
                 print(f'shape of source ground truth is {gt_src.shape}')
                 print(f'shape of target ground truth is {gt_tgt.shape}')
                 loss_src=BCE_Loss(src_out_net,gt_src)
-                #loss_tgt=BCE_Loss(tgt_out_net[:-1],gt_tgt)
-                loss_src_tgt=loss_src
+                print(f'loss for src masking is {loss_src}')
+                loss_tgt=BCE_Loss(tgt_out_net,gt_tgt)
+                print(f'loss for target masking is {loss_tgt}')
+                loss_src_tgt=loss_src+loss_tgt
                 # optimizer
                 optimizer.zero_grad()
                 loss_src_tgt.backward()

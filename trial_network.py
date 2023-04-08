@@ -79,30 +79,7 @@ class SiameseNetwork(nn.Module):
     """
     def __init__(self):
         super(SiameseNetwork, self).__init__()
-        # get resnet model
-        #self.resnet = torchvision.models.resnet18(weights=None)
         self.feature_extractor=PointNet()
-
-        # over-write the first conv layer to be able to read MNIST images
-        # as resnet18 reads (3,x,x) where 3 is RGB channels
-        # whereas MNIST has (1,x,x) where 1 is a gray-scale channel
-        #self.resnet.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
-        #self.fc_in_features = self.resnet.fc.in_features
-        
-        # remove the last layer of resnet18 (linear layer which is before avgpool layer)
-        #self.resnet = torch.nn.Sequential(*(list(self.resnet.children())[:-1]))
-
-        # add linear layers to compare between the features of the two images
-        #self.fc = nn.Sequential(
-            #nn.Linear(self.fc_in_features * 2, 256),
-            #nn.ReLU(inplace=True),
-            #nn.Linear(256, 1),
-        #)
-
-        #self.fc = nn.Sequential(
-            #nn.Linear(100, 256),
-            #nn.ReLU(inplace=True),
-            #nn.Linear(256, 1))
         
         self.fc=nn.Sequential(
             nn.Linear(128,1),
@@ -130,59 +107,31 @@ class SiameseNetwork(nn.Module):
 
     def forward(self, input1, input2):
         # get two point cloud' features
-        output1 = self.forward_once(input1)
-        print(f'shape of output 1 after DCP  is {output1.shape}') # output is of shape (pts,64,1)
-        output2 = self.forward_once(input2)
-        print(f'shape of output 2 after DCP is {output2.shape}') # output is of shape (pts,64,1)
+        output1 = self.forward_once(input1) # output is of shape (pts,64,1)
+        output2 = self.forward_once(input2) # output is of shape (pts,64,1)
         # TODO: fix the concatenation: April 8,2023
         ############ concatenate target max pooled features to source to create source mask ################
         output_2_max=torch.max(output2,dim=0)
         output_2_max_new=output_2_max[0]
         target_maxPooled_duplicated=output_2_max_new.repeat(input1.shape[0],1,1) # shape (pts,64,1)
-        print(f'shape of target max pooled after duplicating is {target_maxPooled_duplicated.shape}')
         ############ concatenate source and target in the feature dimension (dim=1) ##################
         global_source=torch.cat((output1,target_maxPooled_duplicated),dim=1)  # shape (pts,128,1)
-        print(f'shape of global feature vector  after concatenating is {global_source.shape}')
         global_source=global_source.reshape((global_source.shape[0],global_source.shape[2],global_source.shape[1]))
-        print(f'shape of global feature vector before fully connected layer {global_source.shape}')
-        # TODO: fix the concatenation to concatenate source and t
-        #output2_max=torch.max(output2,dim=0)
-        #output2_max_tensor=output2_max[0]
-        #output2_max_new=torch.reshape(output2_max_tensor,(1,output2_max_tensor.shape[0],1))
-        # TODO: now concatentate the source and target
-        #output_src=torch.cat((output1,output2_max_new),dim=0)
-        #output = torch.cat((output1, output2), 1)
-        #output_src=output_src.reshape((output_src.shape[0],output_src.shape[2],output_src.shape[1]))
-        #print(f'shape of output after concatenating is {output_src.shape}')
-
-        # TODO: add the target mask
-        #output1_max=torch.max(output1,dim=0)
-        #output1_max_tensor=output1_max[0]
-        #output1_max_new=torch.reshape(output1_max_tensor,(1,output1_max_tensor.shape[0],1))
-        #output_tgt=torch.cat((output2,output1_max_new),dim=0)
-        #output_tgt=output_tgt.reshape((output_tgt.shape[0],output_tgt.shape[2],output_tgt.shape[1]))
-
-        # TODO: Modify the shape again so that ground truth works
-        #print(f'shape of output modified just before reshaping is {output_src.shape}')
-        #output_modified=torch.reshape(output,(output.shape[2],output.shape[1],output.shape[0]))
-        #print(f'shape of output modified just before linear layer is {output_src.shape}')
-        #print(f'printing shape of input point cloud {input1.shape}')
-        #linear_layer=nn.Linear(output_modified.shape[2],input1.shape[0]).to(device)
-        #output_modified_final=linear_layer(output_modified)
-        #print(f'shape of output before fully connected layer is {output_modified.shape}')
-        #output_modified_final=torch.reshape(output_modified_final,(output_modified_final.shape[2],output_modified_final.shape[1],output_modified_final.shape[0]))
-        # pass the concatenation to the linear layers
+        ########### concatenate source max pooled features to targer to create target mask ###########
+        output_1_max=torch.max(output1,dim=0)
+        output_1_max_new=output_1_max[0]
+        source_maxPooled_duplicated=output_1_max_new.repeat(input1.shape[0],1,1) # shape (pts,64,1)
+        ############ concatenate source and target in the feature dimension (dim=1) ##################
+        global_target=torch.cat((output2,source_maxPooled_duplicated),dim=1)  # shape (pts,128,1)
+        global_target=global_target.reshape((global_target.shape[0],global_target.shape[2],global_target.shape[1]))
+    
+        ############ pass the feature vectors to fully connected layers ###########    
         mask_src = self.fc(global_source)
-        #mask_tgt=self.fc(output_tgt)
-        print(f'shape of output after fully connected is {mask_src.shape}')
+        mask_tgt=self.fc(global_target)
         # pass the out of the linear layers to sigmoid layer
         mask_src = self.sigmoid(mask_src)
-        #mask_tgt=self.sigmoid(mask_tgt)
+        mask_tgt=self.sigmoid(mask_tgt)
         print(f'shape of output after sigmoid activation is {mask_src.shape}')
-
-        #print(f'shape of final output is {output.shape}')
-
-        #print(f'output after sigmoid is {output}')
-        return mask_src
+        return mask_src,mask_tgt
 
 
