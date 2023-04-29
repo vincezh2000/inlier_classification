@@ -17,7 +17,7 @@ class KITTIDataset(Dataset):
     """
     DATA_FILES = {
         'train': './configs/kitti/train_kitti.txt',
-        'val': './configs/kitti/val_kitti.txt',
+        'val': r'/scratch/fsa4859/OverlapPredator/configs/kitti/test_kitti.txt',
         'test': './configs/kitti/test_kitti.txt'
     }
     def __init__(self,config,split,data_augmentation=True):
@@ -25,8 +25,10 @@ class KITTIDataset(Dataset):
         self.config = config
         #self.root = os.path.join(config.root,'dataset')
         #self.icp_path = os.path.join(config.root,'icp')
-        self.root=os.path.join(r'C:\Users\15512\Downloads\data_odometry_velodyne','dataset')
-        self.icp_path = os.path.join(r'C:\Users\15512\Downloads\data_odometry_velodyne','icp')
+        #self.root=os.path.join(r'C:\Users\15512\Downloads\data_odometry_velodyne','dataset')
+        self.root=r'/scratch/fsa4859/OverlapPredator/dataset'
+        #self.icp_path = os.path.join(r'C:\Users\15512\Downloads\data_odometry_velodyne','icp')
+        self.icp_path=r'/scratch/fsa4859/OverlapPredator/dataset/icp'
         if not os.path.exists(self.icp_path):
             os.makedirs(self.icp_path)
         self.voxel_size = config.first_subsampling_dl
