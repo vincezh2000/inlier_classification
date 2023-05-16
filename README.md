@@ -15,6 +15,9 @@ If you have any questions, please let us know:
 - The /overlap_pairs contains numpy arrays. 
 - Each numpy array contain the indices of the inliers for a given pair of point clouds (source and target).
 
+![image](https://github.com/fsa4859/inlier_classification/assets/69100847/31d44a19-7d42-4479-ba10-18f5b8f0e336)
+
+
 **Note**: 
 
 ### Requirements
