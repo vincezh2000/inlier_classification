@@ -1,6 +1,6 @@
 ## Inlier Classification of Low Overlap Point Clouds
 
-### [PREDATOR: Registration of 3D Point Clouds with Low Overlap](https://arxiv.org/abs/2011.13005)
+### [Inlier Classification of Low Overlapping Point Clouds]
 
 ### Contact
 If you have any questions, please let us know: 
@@ -23,111 +23,7 @@ cd cpp_wrappers; sh compile_wrappers.sh; cd ..
 in your working folder.
 
 ### Datasets and pretrained models
-For KITTI dataset, please follow the instruction on [KITTI Odometry website](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to download the KITTI odometry training set.
-
-We provide 
-- preprocessed 3DMatch pairwise datasets (voxel-grid subsampled fragments together with their ground truth transformation matrices)
-- raw dense 3DMatch datasets
-- modelnet dataset
-- pretrained models on 3DMatch, KITTI and Modelnet
-
-The preprocessed data and models can be downloaded by running:
-```shell
-sh scripts/download_data_weight.sh
-```
-
-To download raw dense 3DMatch data, please run:
-```shell
-wget --no-check-certificate --show-progress https://share.phys.ethz.ch/~gsg/pairwise_reg/3dmatch.zip
-unzip 3dmatch.zip
-```
-
-The folder is organised as follows:
-
-- `3dmatch`
-    - `train`
-        - `7-scenes-chess`
-            - `fragments`
-                - `cloud_bin_*.ply`
-                - ...
-            - `poses`
-                - `cloud_bin_*.txt`
-                - ...
-        - ...
-    - `test`
-
-### 3DMatch(Indoor)
-#### Train
-After creating the virtual environment and downloading the datasets, Predator can be trained using:
-```shell
-python main.py configs/train/indoor.yaml
-```
-
-#### Evaluate
-For 3DMatch, to reproduce Table 2 in our main paper, we first extract features and overlap/matachability scores by running: 
-```shell
-python main.py configs/test/indoor.yaml
-```
-the features together with scores will be saved to ```snapshot/indoor/3DMatch```. The estimation of the transformation parameters using RANSAC can then be carried out using:
-```shell
-for N_POINTS in 250 500 1000 2500 5000
-do
-  python scripts/evaluate_predator.py --source_path snapshot/indoor/3DMatch --n_points $N_POINTS --benchmark 3DMatch --exp_dir snapshot/indoor/est_traj --sampling prob
-done
-```
-dependent on ```n_points``` used by RANSAC, this might take a few minutes. The final results are stored in ```snapshot/indoor/est_traj/{benchmark}_{n_points}_prob/result```. To evaluate PREDATOR on 3DLoMatch benchmark, please also change ```3DMatch``` to ```3DLoMatch``` in ```configs/test/indoor.yaml```.
-
-#### Demo
-We prepared a small demo, which demonstrates the whole Predator pipeline using two random fragments from the 3DMatch dataset. To carry out the demo, please run:
-```shell
-python scripts/demo.py configs/test/indoor.yaml
-```
-
-The demo script will visualize input point clouds, inferred overlap regions, and point cloud aligned with the estimated transformation parameters:
-
-<img src="assets/demo.png" alt="demo" width="750"/>
-
-### ModelNet(Synthetic)
-#### Train
-To train PREDATOR on ModelNet, please run:
-```
-python main.py configs/train/modelnet.yaml
-```
-
-We provide a small script to evaluate Predator on ModelNet test set, please run:
-```
-python main.py configs/test/modelnet.yaml
-```
-The rotation and translation errors could be better/worse than the reported ones due to randomness in RANSAC. 
-
-### KITTI(Outdoor)
-We provide a small script to evaluate Predator on KITTI test set, after configuring KITTI dataset, please run:
-```
-python main.py configs/test/kitti.yaml
-```
-the results will be saved to the log file.
-
-
-### Custom dataset
-We have a few tips for train/test on custom dataset
-
-- If it's similar indoor scenes, please run ```demo.py``` first to check the generalisation ability before retraining
-- Remember to voxel-downsample the data in your data loader, see ```kitti.py``` for reference 
-
-### Citation
-If you find this code useful for your work or use it in your project, please consider citing:
-
-```shell
-@InProceedings{Huang_2021_CVPR,
-    author    = {Huang, Shengyu and Gojcic, Zan and Usvyatsov, Mikhail and Wieser, Andreas and Schindler, Konrad},
-    title     = {Predator: Registration of 3D Point Clouds With Low Overlap},
-    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-    month     = {June},
-    year      = {2021},
-    pages     = {4267-4276}
-}
-```
-
+For KITTI dataset, please follow the instruction on [KITTI Odometry website](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to download the KITTI odometry training set
 ### Acknowledgments
 In this project we use (parts of) the official implementations of the followin works: 
 
