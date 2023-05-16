@@ -15,7 +15,7 @@ If you have any questions, please let us know:
 - The /overlap_pairs contains numpy arrays. 
 - Each numpy array contain the indices of the inliers for a given pair of point clouds (source and target).
 
-**Note**: We observe random data loader crashes due to memory issues, if you observe similar issues, please consider reducing the number of workers or increasing CPU RAM. We now released a sparse convolution-based Predator, have a look [here](https://github.com/ShengyuH/OverlapPredator.Mink.git)!
+**Note**: 
 
 ### Requirements
 To create a virtual environment and install the required dependences please run:
