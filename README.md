@@ -1,32 +1,10 @@
-## PREDATOR: Registration of 3D Point Clouds with Low Overlap (CVPR 2021, Oral)
-This repository represents the official implementation of the paper:
+## Inlier Classification of Low Overlap Point Clouds
 
 ### [PREDATOR: Registration of 3D Point Clouds with Low Overlap](https://arxiv.org/abs/2011.13005)
 
-\*[Shengyu Huang](https://shengyuh.github.io), \*[Zan Gojcic](https://zgojcic.github.io/), [Mikhail Usvyatsov](https://aelphy.github.io), [Andreas Wieser](https://gseg.igp.ethz.ch/people/group-head/prof-dr--andreas-wieser.html), [Konrad Schindler](https://prs.igp.ethz.ch/group/people/person-detail.schindler.html)\
-|[ETH Zurich](https://igp.ethz.ch/) | \* Equal contribution
-
-For implementation using MinkowskiEngine backbone, please check [this](https://github.com/ShengyuH/OverlapPredator.Mink)
-
-For more information, please see the [project website](https://overlappredator.github.io)
-
-![Predator_teaser](assets/teaser_predator.jpg?raw=true)
-
-
-
 ### Contact
 If you have any questions, please let us know: 
-- Shengyu Huang {shengyu.huang@geod.baug.ethz.ch}
-- Zan Gojcic {zan.gojcic@geod.baug.ethz.ch}
-
-## News
-- 2021-08-09: We've updated arxiv version of our [paper](https://arxiv.org/abs/2011.13005) with improved performance!
-- 2021-06-02: Fix feature gathering bug in k-nn graph, please see improved performance in this [issue](https://github.com/overlappredator/OverlapPredator/issues/15). Stay tunned for updates on other experiments!
-- 2021-05-31: Check our video and poster on [project page](https://overlappredator.github.io)! 
-- 2021-03-25: Camera ready is on arXiv! I also gave a talk on Predator(中文), you can find the recording here: [Bilibili](https://www.bilibili.com/video/BV1UK4y1U7Gs), [Youtube](https://www.youtube.com/watch?v=AZQGJa6R_4I&t=1563s) 
-- 2021-02-28: MinkowskiEngine-based PREDATOR [release](https://github.com/ShengyuH/OverlapPredator.Mink.git)
-- 2020-11-30: Code and paper release
-
+- Fady Algyar {fsa4859@nyu.edu}
 
 ## Instructions
 This code has been tested on 
