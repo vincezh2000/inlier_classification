@@ -6,9 +6,10 @@
 If you have any questions, please let us know: 
 - Fady Algyar {fsa4859@nyu.edu}
 
-## Instructions
-This code has been tested on 
-- Python 3.8.5, PyTorch 1.7.1, CUDA 11.2, gcc 9.3.0, GeForce RTX 3090/GeForce GTX 1080Ti
+## Data Preparation
+
+- To train our network, we need to prepare the dataset so that each point has a binary classification of whether it is an inlier or not. 
+- The model is being trained on KITTI dataset loaded with Predator dataloader (low overlapping point clouds).
 
 **Note**: We observe random data loader crashes due to memory issues, if you observe similar issues, please consider reducing the number of workers or increasing CPU RAM. We now released a sparse convolution-based Predator, have a look [here](https://github.com/ShengyuH/OverlapPredator.Mink.git)!
 
