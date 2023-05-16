@@ -20,7 +20,14 @@ If you have any questions, please let us know:
 ![image](https://github.com/fsa4859/inlier_classification/assets/69100847/15cd12bb-8732-46ad-bd25-e3e8ae79a046)
 
 
-**Note**: 
+**Note**:
+
+### Model Training and Evaluation
+
+- To train the model run main_trial_final.py
+- To perform model evaluation, run model_inference.py
+
+
 
 ### Requirements
 To create a virtual environment and install the required dependences please run:
