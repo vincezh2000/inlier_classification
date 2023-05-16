@@ -6,7 +6,7 @@
 If you have any questions, please let us know: 
 - Fady Algyar {fsa4859@nyu.edu}
 
-## Data Preparation
+## Ground Truth Data Loading
 
 - To train our network, we need to prepare the dataset so that each point has a binary classification of whether it is an inlier or not. 
 - The model is being trained on KITTI dataset loaded with Predator dataloader (low overlapping point clouds).
@@ -18,7 +18,6 @@ If you have any questions, please let us know:
 ![image](https://github.com/fsa4859/inlier_classification/assets/69100847/31d44a19-7d42-4479-ba10-18f5b8f0e336)
 
 ![image](https://github.com/fsa4859/inlier_classification/assets/69100847/15cd12bb-8732-46ad-bd25-e3e8ae79a046)
-
 
 
 **Note**: 
@@ -33,7 +32,7 @@ cd cpp_wrappers; sh compile_wrappers.sh; cd ..
 ```
 in your working folder.
 
-### Datasets and pretrained models
+### Datasets
 For KITTI dataset, please follow the instruction on [KITTI Odometry website](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) to download the KITTI odometry training set
 ### Acknowledgments
 In this project we use (parts of) the official implementations of the followin works: 
