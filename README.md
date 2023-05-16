@@ -12,8 +12,8 @@ If you have any questions, please let us know:
 - The model is being trained on KITTI dataset loaded with Predator dataloader (low overlapping point clouds).
 - Based on the Euclidean Distance between the points in the point clouds, we can set some threshold value based on which the classification of inliers is performed. 
 - The "overlap_pairs" is the folder containing the ground truth data.
-- the /overlap_pairs contains npy arrays. 
-- each numpy arrays contain the indices of the inliers for a given pair of point clouds (source and target).
+- The /overlap_pairs contains numpy arrays. 
+- Each numpy array contain the indices of the inliers for a given pair of point clouds (source and target).
 
 **Note**: We observe random data loader crashes due to memory issues, if you observe similar issues, please consider reducing the number of workers or increasing CPU RAM. We now released a sparse convolution-based Predator, have a look [here](https://github.com/ShengyuH/OverlapPredator.Mink.git)!
 
